@@ -7,8 +7,8 @@ import java.util.Properties;
 
 public class EmailService {
 
-    private static final String emailAddress = "marek.nowakx1x@gmail.com";
-    private static final String emailPassword = "pi@tek1234";
+    private static final String emailAddress = "";
+    private static final String emailPassword = "";
 
 
     public void send(String to, String title, String content) throws MessagingException
