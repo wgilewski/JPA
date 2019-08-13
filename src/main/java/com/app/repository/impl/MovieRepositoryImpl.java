@@ -14,17 +14,19 @@ import java.util.Optional;
 public class MovieRepositoryImpl extends AbstractGenericRepository<Movie> implements MovieRepository {
     @Override
     public Optional<Movie> findByTitle(String title) {
-        Optional<Movie> items = Optional.empty();
+        Optional<Movie> movie = Optional.empty();
         EntityManager entityManager = null;
         EntityTransaction tx = null;
         try {
             entityManager = entityManagerFactory.createEntityManager();
             tx = entityManager.getTransaction();
             tx.begin();
-            items = entityManager
-                    .createQuery("select i from Movie i", Movie.class)
-                    .getResultList()
-                    .stream().findFirst();
+            TypedQuery<Movie> query = entityManager.createQuery(
+                "select m from Movie m where m.title = :title",Movie.class);
+            query.setParameter("title",title);
+            
+            movie = query.getResultList().stream().findFirst();
+            
             tx.commit();
         } catch (Exception e) {
             if (tx != null) {
@@ -35,7 +37,7 @@ public class MovieRepositoryImpl extends AbstractGenericRepository<Movie> implem
             if (entityManager != null) {
                 entityManager.close();
             }
-            return items;
+            return movie;
         }
     }
 }
