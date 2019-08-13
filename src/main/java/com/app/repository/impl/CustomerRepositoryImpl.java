@@ -14,20 +14,23 @@ public class CustomerRepositoryImpl extends AbstractGenericRepository<Customer> 
 
     @Override
     public Optional<Customer> findByEmail(String email) {
-        Optional<Customer> items = Optional.empty();
+        Optional<Customer> customer = Optional.empty();
         EntityManager entityManager = null;
         EntityTransaction tx = null;
         try {
             entityManager = entityManagerFactory.createEntityManager();
             tx = entityManager.getTransaction();
             tx.begin();
-            items = entityManager
-                    .createQuery("select c from Customer c ", Customer.class)
-                    .getResultList()
-                    .stream()
-                    .findFirst();
-            tx.commit();
+            
+            TypedQuery<Customer> query = entityManager.createQuery(
+                "select c from Customer c where c.email = :email",Customer.Class);
+            
+            query.setParameter("email",email);
+            
+            customer = query.getResultList().stream().findFirtst();
 
+            tx.commit();
+            
         } catch (Exception e) {
             if (tx != null) {
                 tx.rollback();
@@ -37,21 +40,7 @@ public class CustomerRepositoryImpl extends AbstractGenericRepository<Customer> 
             if (entityManager != null) {
                 entityManager.close();
             }
-            return items;
+            return customer;
         }
-    }
-
-
-    public Optional<Customer> findOneByEmail(String email) {
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
-
-        Optional<Customer> optional = Optional.empty();
-        if (entityManager != null && email != null) {
-            Query query = entityManager.createQuery("select p from Customer p where p.email = :email");
-            query.setParameter("email", email);
-            optional = Optional.of((Customer) query.getSingleResult());
-
-        }
-        return optional;
     }
 }
